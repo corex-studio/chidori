@@ -1,7 +1,7 @@
 name: chidori
 description: Package to easily add an action bar over the keyboard.
 version: 1.0.0
-homepage:
+repository: https://github.com/justjew/chidori
 
 environment:
   sdk: ">=2.16.1 <3.0.0"

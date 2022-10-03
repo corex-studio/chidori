@@ -1,7 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'focus_listener.dart';
 
 class KeyboardActionBarWrapper extends StatefulWidget {
@@ -15,12 +14,12 @@ class KeyboardActionBarWrapper extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<KeyboardActionBarWrapper> createState() =>
-      _KeyboardActionBarWrapperState();
+  State<KeyboardActionBarWrapper> createState() => _KeyboardActionBarWrapperState();
 }
 
 class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
   late final StreamSubscription _subscription;
+  late final StreamSubscription _keyboardSubscription;
   FocusNode? currentFocusNode;
 
   OverlayEntry? currentEntry;
@@ -28,6 +27,8 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
   @override
   void initState() {
     super.initState();
+    final keyboardVisibilityController = KeyboardVisibilityController();
+    _keyboardSubscription = keyboardVisibilityController.onChange.listen(_handleKeyboardFocus);
     _subscription = FocusListener().subscribe(_handleFocus);
   }
 
@@ -51,6 +52,12 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
     }
   }
 
+  void _handleKeyboardFocus(bool event) {
+    if (!event) {
+      _unfocus();
+    }
+  }
+
   void _createEntry({
     required bool unfocusOnTapOutside,
     Widget Function(FocusNode)? customBar,
@@ -64,8 +71,8 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
       return;
     }
 
-    final Widget bar = customBar?.call(currentFocusNode!) ??
-        widget.defaultActionBar(currentFocusNode!);
+    final Widget bar =
+        customBar?.call(currentFocusNode!) ?? widget.defaultActionBar(currentFocusNode!);
 
     currentEntry = OverlayEntry(builder: (context) {
       final MediaQueryData queryData = MediaQuery.of(context);
@@ -97,6 +104,7 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
   @override
   void dispose() {
     _subscription.cancel();
+    _keyboardSubscription.cancel();
     super.dispose();
   }
 }

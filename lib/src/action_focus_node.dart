@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 class ActionFocusNode extends FocusNode {
   final bool unfocusOnTapOutside;
   final Widget Function(FocusNode)? customBar;
+  double? barHeight;
 
   ActionFocusNode({
     this.unfocusOnTapOutside = false,
     this.customBar,
+    this.barHeight,
   }) {
     addListener(_handle);
   }

@@ -50,8 +50,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final ActionFocusNode _defaultFocusNode = ActionFocusNode();
-  final ActionFocusNode _tapOutsideFocusNode =
-      ActionFocusNode(unfocusOnTapOutside: true);
+  final ActionFocusNode _tapOutsideFocusNode = ActionFocusNode(unfocusOnTapOutside: true);
   late final ActionFocusNode _customFocusNode;
 
   @override
@@ -59,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _customFocusNode = ActionFocusNode(
       customBar: _buildCustomBar,
+      barHeight: 50,
     );
   }
 
@@ -71,22 +71,35 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
-            const Text('Default'),
-            TextField(
-              focusNode: _defaultFocusNode,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 40),
+                    const Text('Default'),
+                    TextField(
+                      focusNode: _defaultFocusNode,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Custom'),
+                    TextField(
+                      focusNode: _customFocusNode,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Dismiss on tap outside'),
+                    TextField(
+                      focusNode: _tapOutsideFocusNode,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
-            const Text('Custom'),
-            TextField(
-              focusNode: _customFocusNode,
-            ),
-            const SizedBox(height: 20),
-            const Text('Dismiss on tap outside'),
-            TextField(
-              focusNode: _tapOutsideFocusNode,
+            Container(
+              height: 120,
+              width: 200,
+              color: Colors.lime,
             ),
           ],
         ),
@@ -95,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildCustomBar(FocusNode focusNode) {
+    _customFocusNode.barHeight = 80;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(

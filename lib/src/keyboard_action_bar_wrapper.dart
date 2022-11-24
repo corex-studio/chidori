@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'package:chidori/chidori.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'focus_listener.dart';
 
 class KeyboardActionBarWrapper extends StatefulWidget {
-  final Widget Function(FocusNode) defaultActionBar;
+  final Widget Function(ActionFocusNode) defaultActionBar;
   final Widget child;
+  final double defaultBarHeight;
 
   const KeyboardActionBarWrapper({
     Key? key,
     required this.defaultActionBar,
     required this.child,
+    this.defaultBarHeight = 50,
   }) : super(key: key);
 
   @override
@@ -20,9 +23,19 @@ class KeyboardActionBarWrapper extends StatefulWidget {
 class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
   late final StreamSubscription _subscription;
   late final StreamSubscription _keyboardSubscription;
-  FocusNode? currentFocusNode;
+  ActionFocusNode? currentFocusNode;
+  GlobalKey? barKey;
 
   OverlayEntry? currentEntry;
+
+  bool get _hasFocus => currentFocusNode?.hasFocus ?? false;
+
+  double get barHeight {
+    if (currentFocusNode!.barHeight != null) {
+      return currentFocusNode!.barHeight!;
+    }
+    return widget.defaultBarHeight;
+  }
 
   @override
   void initState() {
@@ -34,7 +47,10 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return Container(
+      margin: EdgeInsets.only(bottom: _hasFocus ? barHeight : 0),
+      child: widget.child,
+    );
   }
 
   void _handleFocus(FocusEvent event) {
@@ -50,6 +66,8 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
       currentFocusNode = null;
       currentEntry?.remove();
     }
+
+    setState(() {});
   }
 
   void _handleKeyboardFocus(bool event) {
@@ -60,7 +78,7 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
 
   void _createEntry({
     required bool unfocusOnTapOutside,
-    Widget Function(FocusNode)? customBar,
+    Widget Function(ActionFocusNode)? customBar,
   }) {
     if (currentFocusNode == null) {
       return;
@@ -71,8 +89,10 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
       return;
     }
 
-    final Widget bar =
-        customBar?.call(currentFocusNode!) ?? widget.defaultActionBar(currentFocusNode!);
+    final Widget bar = customBar?.call(currentFocusNode!) ??
+        widget.defaultActionBar(
+          currentFocusNode!,
+        );
 
     currentEntry = OverlayEntry(builder: (context) {
       final MediaQueryData queryData = MediaQuery.of(context);

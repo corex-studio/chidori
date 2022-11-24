@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:chidori/chidori.dart';
 import 'package:flutter/material.dart';
 
 class FocusListener {
-  final StreamController<FocusEvent> eventPool =
-      StreamController<FocusEvent>.broadcast();
+  final StreamController<FocusEvent> eventPool = StreamController<FocusEvent>.broadcast();
 
   static final FocusListener _singleton = FocusListener._internal();
 
@@ -19,9 +19,9 @@ class FocusListener {
   }
 
   void request(
-    FocusNode focusNode, {
+    ActionFocusNode focusNode, {
     required bool unfocusOnTapOutside,
-    Widget Function(FocusNode)? customBar,
+    Widget Function(ActionFocusNode)? customBar,
   }) {
     eventPool.add(FocusRequested(
       focusNode,
@@ -30,28 +30,28 @@ class FocusListener {
     ));
   }
 
-  void disappear(FocusNode focusNode) {
+  void disappear(ActionFocusNode focusNode) {
     eventPool.add(FocusDisappeared(focusNode));
   }
 }
 
 class FocusEvent {
-  final FocusNode focusNode;
+  final ActionFocusNode focusNode;
 
   FocusEvent(this.focusNode);
 }
 
 class FocusRequested extends FocusEvent {
   final bool unfocusOnTapOutside;
-  final Widget Function(FocusNode)? customBar;
+  final Widget Function(ActionFocusNode)? customBar;
 
   FocusRequested(
-    FocusNode focusNode, {
+    ActionFocusNode focusNode, {
     this.unfocusOnTapOutside = false,
     this.customBar,
   }) : super(focusNode);
 }
 
 class FocusDisappeared extends FocusEvent {
-  FocusDisappeared(FocusNode focusNode) : super(focusNode);
+  FocusDisappeared(ActionFocusNode focusNode) : super(focusNode);
 }

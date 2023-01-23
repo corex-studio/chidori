@@ -58,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _customFocusNode = ActionFocusNode(
       customBar: _buildCustomBar,
-      barHeight: 50,
     );
   }
 
@@ -108,7 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildCustomBar(FocusNode focusNode) {
-    _customFocusNode.barHeight = 80;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(

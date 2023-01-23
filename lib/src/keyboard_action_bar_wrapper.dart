@@ -3,17 +3,18 @@ import 'package:chidori/chidori.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'focus_listener.dart';
+import 'package:measured_size/measured_size.dart';
 
 class KeyboardActionBarWrapper extends StatefulWidget {
   final Widget Function(ActionFocusNode) defaultActionBar;
   final Widget child;
-  final double defaultBarHeight;
+  // final double defaultBarHeight;
 
   const KeyboardActionBarWrapper({
     Key? key,
     required this.defaultActionBar,
     required this.child,
-    this.defaultBarHeight = 50,
+    // this.defaultBarHeight = 50,
   }) : super(key: key);
 
   @override
@@ -29,12 +30,14 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
   OverlayEntry? currentEntry;
 
   bool get _hasFocus => currentFocusNode?.hasFocus ?? false;
-
+  Size wsize = Size.zero;
   double get barHeight {
-    if (currentFocusNode!.barHeight != null) {
-      return currentFocusNode!.barHeight!;
-    }
-    return widget.defaultBarHeight;
+    return wsize.height;
+    // if (currentFocusNode!.barHeight != null) {
+    //   return currentFocusNode!.barHeight!;
+    // }
+    // return widget.defaultBarHeight;
+    return 0;
   }
 
   @override
@@ -89,10 +92,19 @@ class _KeyboardActionBarWrapperState extends State<KeyboardActionBarWrapper> {
       return;
     }
 
-    final Widget bar = customBar?.call(currentFocusNode!) ??
+    final Widget preBar = customBar?.call(currentFocusNode!) ??
         widget.defaultActionBar(
           currentFocusNode!,
         );
+
+    final bar = MeasuredSize(
+      onChange: (Size size) {
+        setState(() {
+          wsize = size;
+        });
+      },
+      child: preBar,
+    );
 
     currentEntry = OverlayEntry(builder: (context) {
       final MediaQueryData queryData = MediaQuery.of(context);
